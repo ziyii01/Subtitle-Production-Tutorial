@@ -1,8 +1,9 @@
 ## 概述
+
 本篇文章将粗略讲解x265和x264这两个编码器的常用参数，对功能的介绍仅基于使用经验，没有详细了解过算法部分，故大家不要完全置信。
 
-
 ## x265参数
+
 [官方文档](https://x265.readthedocs.io)
 
 因为在2024年的今天，HEVC硬件解码已经几乎完全普及(你要是翻出个古董那我也没办法)，所以将视频压为10bit HEVC格式是主流做法，甚至可以完全抛弃AVC，所以我将主要讲解x265编码器的参数。
@@ -12,10 +13,10 @@
 
 x265有多种码率控制模式，在我们所需要的压制中，使用CRF模式压缩率最高
 
-
 _取值列中，前面是取值范围，括号内是默认值_
 
 ### 质量、码率、率失真
+
 | 选项 | 取值 | 描述 | 效果 | 补充说明 |
 | :--: | :--: | :--: | :--: | :------: |
 | [crf](https://x265.readthedocs.io/en/master/cli.html#cmdoption-crf)           | 0..51.0  (28)  | 基于质量的VBR，控制整体质量 | 数值越大，整体质量越低         | crf间接控制P帧的qp |
@@ -30,6 +31,7 @@ _取值列中，前面是取值范围，括号内是默认值_
 | [qcomp](https://x265.readthedocs.io/en/master/cli.html#cmdoption-qcomp)             | 0.5..1.0 (0.6) | 预测复杂度的权重 | 控制码率向动态画面(复杂残差)的偏移程度 | 调越高，静态画面分配到的码率越低，动态画面分配到的码率越高，所以调很高的话记得调低crf以弥补静态画面的码率损失，建议[0.65,0.75]，一般情况0.65足够<br>(因为是根据残差判断，所以值为1时，同CQP) |
 
 ### 运动搜索
+
 | 选项 | 取值 | 描述 | 效果 | 补充说明 |
 | :--: | :--: | :--: | :--: | :------: |
 | [ref](https://x265.readthedocs.io/en/master/cli.html#cmdoption-ref)         | 1..16    (3)   | 最大参考帧帧数   | 一定程度提升压缩率，少量降低速率 | HEVC规范中最高为8，这个值越高压缩率越高，对编码速率的降低较少，所以个人建议无脑拉最高 |
@@ -43,6 +45,7 @@ _取值列中，前面是取值范围，括号内是默认值_
 | [amp](https://x265.readthedocs.io/en/master/cli.html#cmdoption-amp)         | bool     (0)   | Enable asymmetric motion partitions                | 略微提升压缩率，降低编码速率 | 同样是启用一种新的预测方法，需要开启rect才能开启，同样是建议电脑性能足够，且时间充裕再开 |
 
 ### CTU
+
 | 选项 | 取值 | 描述 | 效果 | 补充说明 |
 | :--: | :--: | :--: | :--: | :------: |
 | [ctu](https://x265.readthedocs.io/en/master/cli.html#cmdoption-ctu)                       | 64&#124;32&#124;16        (64) | Maximum CU size (WxH)      | | 一般情况下没必要调<br>（这就不得不吐槽一下了，最高只能64，编码高分辨率视频慢得跟吃食一样难受） |
@@ -53,6 +56,7 @@ _取值列中，前面是取值范围，括号内是默认值_
 | [limit-tu](https://x265.readthedocs.io/en/master/cli.html#cmdoption-limit-tu)             | 0..4                      (0) | 最大提前结束帧间TU递归的深度 | 有效提升速率，但略微降低压缩率      | 因为是自动计算递归终止的时机的，所以开启后对压缩率的降低效果甚微，但能大幅度提升高tu-inter-depth编码时的编码速率，建议2 |
 
 ### 率失真优化
+
 | 选项 | 取值 | 描述 | 效果 | 补充说明 |
 | :--: | :--: | :--: | :--: | :------: |
 | [rd](https://x265.readthedocs.io/en/master/cli.html#cmdoption-rd)                 | 1..6    (3) | 控制RD(Rate-Distortion)决策模式      | 显著提升压缩率，但降低速率 | 实测6压缩率比5低，所以只建议开5或3 |
@@ -61,17 +65,20 @@ _取值列中，前面是取值范围，括号内是默认值_
 | [psy-rdoq](https://x265.readthedocs.io/en/master/cli.html#cmdoption-psy-rdoq)     | 0..50.0 (0) | RDOQ的心理视觉优化强度               | 类似psy-rd | 可用于保留纹理，建议[0,2]，不建议开高，因为开高对画质的优化不如直接调低CRF，调成0也没啥问题 |
 
 ### Coding tool
+
 | 选项 | 取值 | 描述 | 效果 | 补充说明 |
 | :--: | :--: | :--: | :--: | :------: |
 | [weightb](https://x265.readthedocs.io/en/master/cli.html#cmdoption-merange) | bool (0) | 开启B帧加权预测 | 提升压缩率 | 这是在原本的预测参数上加权，所以不会影响编码速率，所以必开 |
 
 ### Loop filter
+
 | 选项 | 取值 | 描述 | 效果 | 补充说明 |
 | :--: | :--: | :--: | :--: | :------: |
 | [deblock](https://x265.readthedocs.io/en/master/cli.html#cmdoption-deblock) | float, float (0, 0) | 去块滤镜 | 两个形参分别是范围和阈值，阈值越高强度越大 | 建议画面清晰的动画-1,-1，画面存在色块的话可以自行调整 |
 | [sao](https://x265.readthedocs.io/en/master/cli.html#cmdoption-sao)         | bool         (1)    | 采样自适应偏移 |                                    | 想法很好，但实际测试结果很烂，一般必关 |
 
 ### 切片决策
+
 | 选项 | 取值 | 描述 | 效果 | 补充说明 |
 | :--: | :--: | :--: | :--: | :------: |
 | [open-gop](https://x265.readthedocs.io/en/master/cli.html#cmdoption-open-gop)         | bool      (1)   | 允许I帧作为非IDR帧  | 略微提升压缩率，略微增加解码压力 | 一些HEVC普及早期的古董版本的解码器可能不兼容，现在无所谓了，所以开 |

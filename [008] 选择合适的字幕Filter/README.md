@@ -1,11 +1,12 @@
 ## 什么是字幕Filter
+
 字幕Filter，这里的`Filter`可以翻译成滤镜、解码器、渲染器，它的作用是解析字幕文件，输出为画面。  
 字幕文件是纯文本文件，Filter 读取文件，解析这个文件里需要渲染哪些画面，将画面输出给下游(下一位)渲染器，如madVR，渲染器再将画面渲染到屏幕上。
 
 所以不同的Filter，可能会导致渲染出来的画面不同，以至于必须统一Filter，也就是说必须统一整个制作流程的所有Filter。
 
-
 ## 简介各Filters
+
 现在常见的`ASS Filter`有`VSFilter`、`VSFM`、`xy-VSFilter`、`libass`、`XySubFilter with libass`。
 
 ### VSFilter
@@ -34,8 +35,8 @@
 
 和`xy-VSFilter`一样，相当于`libass + XySubFilter`
 
-
 ## 如何选择
+
 从长远的角度看，选择`libass`是最好的方案，但`VSFM`又有很多`libass`没有的好用功能，  
 虽然有些功能可以通过自动化脚本解决，但有非原生带来的各种问题，例如大幅增加字幕行的占用和性能开销，  
 `libass`的开发者也一直没有增加这些新功能的意思，所以VSFM又不乏是一个不错的选择。
