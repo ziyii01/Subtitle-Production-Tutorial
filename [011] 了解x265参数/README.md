@@ -8,8 +8,8 @@
 
 因为在2024年的今天，HEVC硬件解码已经几乎完全普及(你要是翻出个古董那我也没办法)，所以将视频压为10bit HEVC格式是主流做法，甚至可以完全抛弃AVC，所以我将主要讲解x265编码器的参数。
 
-用法:`ffmpeg -i "" -c:v libx265 -x265-params "这里填x265参数" ""`  
-示例:`ffmpeg -i "input.mp4" -c:v libx265 -x265-params "crf=18:deblock=0.5,0.5:me=star:weightb=1" "output.mkv"`
+用法: `ffmpeg -i "" -c:v libx265 -x265-params "这里填x265参数" ""`  
+示例: `ffmpeg -i "input.mp4" -c:v libx265 -x265-params "crf=18:deblock=0.5,0.5:me=star:weightb=1" "output.mkv"`
 
 x265有多种码率控制模式，在我们所需要的压制中，使用CRF模式压缩率最高
 
